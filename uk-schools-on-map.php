@@ -40,9 +40,9 @@ function uk_schools_on_map_shortcode() {
     <div class="address-container">
         <form id="postcode-form">
             <div class="postcode-form-row">
-                <label class="postcode-form-label" for="postcode">Enter City or Postal Code:</label>
+                <label class="postcode-form-label" for="postcode">Podaj Miasto lub Kod Pocztowy:</label>
                 <input placeholder="AB15" type="text" id="postcode" />
-                <input type="submit" value="Search" />
+                <input type="submit" value="Wyszukaj" />
             </div>
         </form>
 

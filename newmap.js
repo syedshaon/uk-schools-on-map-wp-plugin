@@ -101,7 +101,7 @@ function getDistances(userLocation, chunk, chunkStartIndex, addresses, distanceR
 
 function updateAddressList(closestIndices, addresses) {
   const addressListDiv = document.getElementById("address-list");
-  addressListDiv.innerHTML = "<strong>Institutions:</strong><br>";
+  addressListDiv.innerHTML = "<strong>Instytucje:</strong><br>";
   if (closestIndices.length > 0) {
     closestIndices.forEach((index, i) => {
       const addressItem = createAddressItem(index, addresses);
@@ -118,29 +118,36 @@ function updateAddressList(closestIndices, addresses) {
 
 function createAddressItem(index, addresses) {
   const addressItem = document.createElement("div");
+  addressItem.className = "uk_schools_single";
   addressItem.style.cursor = "pointer";
 
   const nameText = document.createElement("p");
+  nameText.className = "uk_schools_single_name";
   nameText.innerHTML = "<strong>" + addresses[index].name + "</strong>";
   addressItem.appendChild(nameText);
 
   const addressText = document.createElement("p");
-  addressText.innerHTML = "<strong>Address: </strong>" + addresses[index].address.replace(/, /g, "<br>");
+  addressText.className = "uk_schools_single_address";
+  addressText.innerHTML = "<strong>Adres: </strong>" + addresses[index].address.replace(/, /g, "<br>");
   addressItem.appendChild(addressText);
 
   const directorText = document.createElement("p");
-  directorText.innerHTML = "<strong>Director: </strong>" + addresses[index].director;
+  directorText.className = "uk_schools_single_director";
+  directorText.innerHTML = "<strong>Dyrektor: </strong>" + addresses[index].director;
   addressItem.appendChild(directorText);
 
   const telephoneText = document.createElement("p");
-  telephoneText.innerHTML = "<strong>Phone: </strong>" + addresses[index].telephone;
+  telephoneText.className = "uk_schools_single_telephone";
+  telephoneText.innerHTML = "<strong>Telefon: </strong>" + addresses[index].telephone;
   addressItem.appendChild(telephoneText);
 
   const facebookText = document.createElement("p");
+  facebookText.className = "uk_schools_single_facebook";
   facebookText.innerHTML = "<strong>Facebook: </strong>" + `<a href="${addresses[index].facebook}" target="_blank">${addresses[index].facebook}</a>`;
   addressItem.appendChild(facebookText);
 
   const websiteText = document.createElement("p");
+  websiteText.className = "uk_schools_single_website";
   websiteText.innerHTML = "<strong>Website: </strong>" + `<a href="${addresses[index].website}" target="_blank">${addresses[index].website}</a>`;
   addressItem.appendChild(websiteText);
 

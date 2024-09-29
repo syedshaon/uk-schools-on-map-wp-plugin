@@ -13,7 +13,7 @@ body {
 }
 
 /* Styling the form */
-.postcode-form {
+#postcode-form {
   margin-bottom: 20px;
 }
 
@@ -26,14 +26,14 @@ body {
   margin-bottom: 20px;
 }
 
-input[type="text"] {
+.postcode-form-row input[type="text"] {
   width: 60%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-input[type="submit"] {
+.postcode-form-row input[type="submit"] {
   width: 20%;
   background-color: #28a745;
   color: white;
@@ -45,7 +45,7 @@ input[type="submit"] {
   transition: all 0.3s ease;
 }
 
-input[type="submit"]:hover {
+.postcode-form-row input[type="submit"]:hover {
   background-color: #218838;
 }
 
@@ -65,28 +65,21 @@ input[type="submit"]:hover {
   margin: 50px auto;
   padding: 20px;
 }
+#address-list strong {
+  display: block;
+  margin-bottom: 10px;
+}
 
-#address-list div {
+.uk_schools_single {
   cursor: pointer;
   padding: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   background-color: #f8f9fa;
   border: 1px solid #ccc;
   border-radius: 8px;
   transition: background-color 0.3s ease;
 }
 
-#address-list div:hover {
+.uk_schools_single:hover {
   background-color: #e9ecef;
-}
-
-#address-list strong {
-  display: block;
-  margin-bottom: 5px;
-}
-
-#address-list hr {
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 10px 0;
 }
