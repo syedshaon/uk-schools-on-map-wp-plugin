@@ -59,7 +59,7 @@ function processAddressesInChunks(userLocation, addresses) {
     if (index >= addressStrings.length) {
       // All chunks processed, now sort and update
       distanceResults.sort((a, b) => a.distance - b.distance);
-      const closestIndices = distanceResults.slice(0, 4).map((item) => item.index);
+      const closestIndices = distanceResults.slice(0, 8).map((item) => item.index);
       updateAddressList(closestIndices, addresses);
       if (closestIndices.length > 0) {
         showAddressOnMap(addresses[closestIndices[0]].address, addresses[closestIndices[0]].name);
@@ -133,25 +133,45 @@ function createAddressItem(index, addresses) {
 
   const directorText = document.createElement("p");
   directorText.className = "uk_schools_single_director";
-  directorText.innerHTML = "<strong>Dyrektor: </strong>" + addresses[index].director;
-  addressItem.appendChild(directorText);
+  if (addresses[index].director) {
+    directorText.innerHTML = "<strong>Dyrektor: </strong>" + addresses[index].director;
+    addressItem.appendChild(directorText);
+  }
 
   const telephoneText = document.createElement("p");
   telephoneText.className = "uk_schools_single_telephone";
-  telephoneText.innerHTML = "<strong>Telefon: </strong>" + addresses[index].telephone;
-  addressItem.appendChild(telephoneText);
+  if (addresses[index].telephone) {
+    telephoneText.innerHTML = "<strong>Telefon: </strong>" + addresses[index].telephone;
+    addressItem.appendChild(telephoneText);
+  }
+
+  const emailText = document.createElement("p");
+  emailText.className = "uk_schools_single_email";
+  if (addresses[index].email) {
+    emailText.innerHTML = "<strong>Email: </strong>" + `<a href="mailto:${addresses[index].email}">${addresses[index].email}</a>`;
+    addressItem.appendChild(emailText);
+  }
 
   const facebookText = document.createElement("p");
   facebookText.className = "uk_schools_single_facebook";
-  facebookText.innerHTML = "<strong>Facebook: </strong>" + `<a href="${addresses[index].facebook}" target="_blank">${addresses[index].facebook}</a>`;
-  addressItem.appendChild(facebookText);
+
+  if (addresses[index].facebook) {
+    facebookText.innerHTML = "<strong>Facebook: </strong>" + `<a  href="${addresses[index].facebook}" target="_blank"><span class="facebook-icon"></span></a>`;
+    addressItem.appendChild(facebookText);
+  }
 
   const websiteText = document.createElement("p");
   websiteText.className = "uk_schools_single_website";
-  websiteText.innerHTML = "<strong>Website: </strong>" + `<a href="${addresses[index].website}" target="_blank">${addresses[index].website}</a>`;
-  addressItem.appendChild(websiteText);
+  if (addresses[index].website) {
+    websiteText.innerHTML = "<strong>Website: </strong>" + `<a href="${addresses[index].website}" target="_blank">${addresses[index].website}</a>`;
+    addressItem.appendChild(websiteText);
+  }
 
-  addressItem.addEventListener("click", () => showAddressOnMap(addresses[index].address, addresses[index].name));
+  // addressItem.addEventListener("click", () => showAddressOnMap(addresses[index].address, addresses[index].name));
+  addressItem.addEventListener("click", () => {
+    showAddressOnMap(addresses[index].address, addresses[index].name);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   return addressItem;
 }

@@ -113,19 +113,34 @@ function uk_schools_on_map_options_page() {
             }
         } else {
             if (isset($_POST['addresses']) && is_array($_POST['addresses'])) {
-                $addresses = array_map(function($address) {
-                    return [
-                        'name' => sanitize_text_field($address['name']),
-                        'address' => sanitize_text_field($address['address']),
-                        'director' => sanitize_text_field($address['director']),
-                        'telephone' => sanitize_text_field($address['telephone']),
-                        'facebook' => esc_url($address['facebook']),   // Facebook URL
-                        'website' => esc_url($address['website'])      // Website URL
-                    ];
-                }, $_POST['addresses']);
-                update_option('uk_schools_on_map_addresses', $addresses);
-                echo '<div class="updated"><p>Addresses updated successfully.</p></div>';
+                $addresses = array_filter(array_map(function($address) {
+                    // Only return the address array if 'address' has a value
+                    if (!empty($address['address'])) {
+                        return [
+                            'name' => sanitize_text_field($address['name']),
+                            'address' => sanitize_text_field($address['address']),
+                            'director' => sanitize_text_field($address['director']),
+                            'telephone' => sanitize_text_field($address['telephone']),
+                            'email' => sanitize_email($address['email']), // Sanitize and save email field
+                            'facebook' => esc_url($address['facebook']),
+                            'website' => esc_url($address['website']),
+                        ];
+                    }
+                    return null; // Return null if address is empty
+                }, $_POST['addresses']));
+
+                // Remove null entries created by array_map
+                $addresses = array_filter($addresses);
+
+                // Update the option only if there are valid addresses
+                if (!empty($addresses)) {
+                    update_option('uk_schools_on_map_addresses', $addresses);
+                    echo '<div class="updated"><p>Addresses updated successfully.</p></div>';
+                } else {
+                    echo '<div class="error"><p>No addresses were saved. Please make sure each address has a valid value.</p></div>';
+                }
             }
+
         }
     }
 
@@ -168,6 +183,7 @@ function uk_schools_on_map_options_page() {
                         <th>Address</th>
                         <th>Director</th>
                         <th>Telephone</th>
+                        <th>Email</th> <!-- Add Email Column Header -->
                         <th>Facebook</th>
                         <th>Website</th>
                         <th>Action</th>
@@ -178,8 +194,8 @@ function uk_schools_on_map_options_page() {
                   foreach ($addresses as $index => $address) {
                       if (is_array($address)) {
                           echo '<tr>';
-                          echo '<td><input type="text" name="addresses[' . $index . '][name]" value="' . esc_attr($address['name']) . '" /></td>';
-                          echo '<td><input type="text" name="addresses[' . $index . '][address]" value="' . esc_attr($address['address']) . '" /></td>';
+                          echo '<td><input  type="text" name="addresses[' . $index . '][name]" value="' . esc_attr($address['name']) . '" /></td>';
+                          echo '<td><input class="address-field" required  type="text" name="addresses[' . $index . '][address]" value="' . esc_attr($address['address']) . '" /><span style="color:red; margin-left:2px; font-size:20px; margin-bottom:10px;">*</span></td>';
 
                           // Check if $address['director'] has a value before echoing the input field
                           if (!empty($address['director'])) {
@@ -194,6 +210,14 @@ function uk_schools_on_map_options_page() {
                           } else {
                               echo '<td><input type="text" name="addresses[' . $index . '][telephone]" value="" /></td>'; // Or provide a placeholder if you want to show an empty cell
                           }
+
+                            // Add this new email input field
+                         if (!empty($address['email'])) {
+                          echo '<td><input type="email" name="addresses[' . $index . '][email]" value="' . esc_attr($address['email'] ?? '') . '" placeholder="Email Address" /></td>';
+                                } else {
+                              echo '<td><input type="email" name="addresses[' . $index . '][email]" value="" /></td>'; // Or provide a placeholder if you want to show an empty cell
+                          }
+
 
                           // Check if $address['facebook'] has a value before echoing the input field
                           if (!empty($address['facebook'])) {
@@ -224,6 +248,7 @@ function uk_schools_on_map_options_page() {
         document.getElementById('add-address').addEventListener('click', function () {
             const table = document.getElementById('address-rows');
             const rowCount = table.rows.length;
+
             const newRow = document.createElement('tr');
 
             newRow.innerHTML = `
@@ -231,6 +256,7 @@ function uk_schools_on_map_options_page() {
                 <td><input type="text" name="addresses[${rowCount}][address]" value="" /></td>
                 <td><input type="text" name="addresses[${rowCount}][director]" value="" /></td>
                 <td><input type="text" name="addresses[${rowCount}][telephone]" value="" /></td>
+                <td><input type="email" name="addresses[${rowCount}][email]" value="" placeholder="Email Address" /></td>   
                 <td><input type="text" name="addresses[${rowCount}][facebook]" value="" placeholder="Facebook Page URL" /></td>
                 <td><input type="text" name="addresses[${rowCount}][website]" value="" placeholder="Website URL" /></td>
                 <td></td>
