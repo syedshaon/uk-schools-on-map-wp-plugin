@@ -112,34 +112,36 @@ function uk_schools_on_map_options_page() {
                 echo '<div class="updated"><p>Address deleted successfully.</p></div>';
             }
         } else {
-            if (isset($_POST['addresses']) && is_array($_POST['addresses'])) {
-                $addresses = array_filter(array_map(function($address) {
-                    // Only return the address array if 'address' has a value
-                    if (!empty($address['address'])) {
-                        return [
-                            'name' => sanitize_text_field($address['name']),
-                            'address' => sanitize_text_field($address['address']),
-                            'director' => sanitize_text_field($address['director']),
-                            'telephone' => sanitize_text_field($address['telephone']),
-                            'email' => sanitize_email($address['email']), // Sanitize and save email field
-                            'facebook' => esc_url($address['facebook']),
-                            'website' => esc_url($address['website']),
-                        ];
-                    }
-                    return null; // Return null if address is empty
-                }, $_POST['addresses']));
+             if (isset($_POST['addresses']) && is_array($_POST['addresses'])) {
+                  $addresses = array_filter(array_map(function($address) {
+                      // Only return the address array if 'address' has a value
+                      if (!empty($address['address'])) {
+                          return [
+                              'name' => sanitize_text_field($address['name']),
+                              'address' => sanitize_text_field($address['address']),
+                              'director' => sanitize_text_field($address['director']),
+                              'telephone' => sanitize_text_field($address['telephone']),
+                              'email' => sanitize_email($address['email']),
+                              'facebook' => esc_url($address['facebook']),
+                              'instagram' => esc_url($address['instagram']),
+                              'website' => esc_url($address['website']),
+                              'logo' => esc_url($address['logo']),  // Sanitize and save Logo URL
+                          ];
+                      }
+                      return null; // Return null if address is empty
+                  }, $_POST['addresses']));
 
-                // Remove null entries created by array_map
-                $addresses = array_filter($addresses);
+                  // Remove null entries created by array_map
+                  $addresses = array_filter($addresses);
 
-                // Update the option only if there are valid addresses
-                if (!empty($addresses)) {
-                    update_option('uk_schools_on_map_addresses', $addresses);
-                    echo '<div class="updated"><p>Addresses updated successfully.</p></div>';
-                } else {
-                    echo '<div class="error"><p>No addresses were saved. Please make sure each address has a valid value.</p></div>';
-                }
-            }
+                  // Update the option only if there are valid addresses
+                  if (!empty($addresses)) {
+                      update_option('uk_schools_on_map_addresses', $addresses);
+                      echo '<div class="updated"><p>Addresses updated successfully.</p></div>';
+                  } else {
+                      echo '<div class="error"><p>No addresses were saved. Please make sure each address has a valid value.</p></div>';
+                  }
+              }
 
         }
     }
@@ -185,7 +187,9 @@ function uk_schools_on_map_options_page() {
                         <th>Telephone</th>
                         <th>Email</th> <!-- Add Email Column Header -->
                         <th>Facebook</th>
+                        <th>Instagram</th>
                         <th>Website</th>
+                        <th>Logo URL</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -195,7 +199,7 @@ function uk_schools_on_map_options_page() {
                       if (is_array($address)) {
                           echo '<tr>';
                           echo '<td><input  type="text" name="addresses[' . $index . '][name]" value="' . esc_attr($address['name']) . '" /></td>';
-                          echo '<td><input class="address-field" required  type="text" name="addresses[' . $index . '][address]" value="' . esc_attr($address['address']) . '" /><span style="color:red; margin-left:2px; font-size:20px; margin-bottom:10px;">*</span></td>';
+                          echo '<td style="display:flex; align-items:center;"><input class="address-field" required  type="text" name="addresses[' . $index . '][address]" value="' . esc_attr($address['address']) . '" /><span style="color:red; margin-left:2px; font-size:20px; margin-bottom:10px;">*</span></td>';
 
                           // Check if $address['director'] has a value before echoing the input field
                           if (!empty($address['director'])) {
@@ -226,12 +230,29 @@ function uk_schools_on_map_options_page() {
                               echo '<td><input type="text" name="addresses[' . $index . '][facebook]" value="" placeholder="Facebook Page URL" /></td>'; // Or provide a placeholder if you want to show an empty cell
                           }
 
+                          
+                          // Check if $address['Instagram'] has a value before echoing the input field
+                          if (!empty($address['instagram'])) {
+                               echo '<td><input type="text" name="addresses[' . $index . '][instagram]" value="' . esc_attr($address['instagram']) . '" placeholder="Instagram URL" /></td>'; // New Instagram input field          
+                          } else {
+                              echo '<td><input type="text" name="addresses[' . $index . '][instagram]" value="" placeholder="Instagram URL" /></td>'; // Or provide a placeholder if you want to show an empty cell
+                          }
+
+
+
                           // Check if $address['website'] has a value before echoing the input field
                           if (!empty($address['website'])) {
                               echo '<td><input type="text" name="addresses[' . $index . '][website]" value="' . esc_attr($address['website']) . '" placeholder="Website URL" /></td>';
                           } else {
                               echo '<td><input type="text" name="addresses[' . $index . '][website]" value="" placeholder="Website URL" /></td>'; // Or provide a placeholder if you want to show an empty cell
                           }
+
+                          if (!empty($address['logo'])) {
+                            echo '<td><input type="text" name="addresses[' . $index . '][logo]" value="' . esc_attr($address['logo']) . '" placeholder="Logo URL" /></td>'; // New Logo URL input field
+                             } else {
+                              echo '<td><input type="text" name="addresses[' . $index . '][logo]" value="" placeholder="Logo URL" /></td>'; // Or provide a placeholder if you want to show an empty cell
+                          }
+           
 
                           echo '<td><button type="submit" name="delete_index" value="' . $index . '" class="button button-danger">Delete</button></td>';
                           echo '</tr>';
@@ -258,7 +279,10 @@ function uk_schools_on_map_options_page() {
                 <td><input type="text" name="addresses[${rowCount}][telephone]" value="" /></td>
                 <td><input type="email" name="addresses[${rowCount}][email]" value="" placeholder="Email Address" /></td>   
                 <td><input type="text" name="addresses[${rowCount}][facebook]" value="" placeholder="Facebook Page URL" /></td>
+                  <td><input type="text" name="addresses[${rowCount}][instagram]" value="" placeholder="Instagram URL" /></td> <!-- New Instagram field -->       
                 <td><input type="text" name="addresses[${rowCount}][website]" value="" placeholder="Website URL" /></td>
+                 <td><input type="text" name="addresses[${rowCount}][logo]" value="" placeholder="Logo URL" /></td> <!-- New Logo URL field -->
+        
                 <td></td>
             `;
             table.appendChild(newRow);

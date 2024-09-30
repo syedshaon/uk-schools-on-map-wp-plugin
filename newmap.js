@@ -86,10 +86,13 @@ function getDistances(userLocation, chunk, chunkStartIndex, addresses, distanceR
     },
     function (response, status) {
       if (status === "OK") {
-        const distances = response.rows[0].elements.map((item, index) => ({
-          distance: item.distance.value,
-          index: chunkStartIndex + index,
-        }));
+        const distances = response.rows[0].elements
+          .map((item, index) => ({
+            distance: item.distance.value, // distance in meters
+            index: chunkStartIndex + index,
+          }))
+          .filter((item) => item.distance <= 32186); // 32,186 meters = 20 miles
+
         distanceResults.push(...distances);
       } else {
         console.error("DistanceMatrix failed: " + status);
@@ -121,50 +124,82 @@ function createAddressItem(index, addresses) {
   addressItem.className = "uk_schools_single";
   addressItem.style.cursor = "pointer";
 
+  // Address row one
+  const addressRowOne = document.createElement("div");
+  addressRowOne.className = "uk_schools_single_address_row_one";
+  addressItem.appendChild(addressRowOne);
+
+  const imgURL = addresses[index].logo;
+  if (imgURL) {
+    const logo = document.createElement("img");
+    logo.src = imgURL;
+    logo.className = "uk_schools_single_logo";
+    addressRowOne.appendChild(logo);
+  }
+
   const nameText = document.createElement("p");
   nameText.className = "uk_schools_single_name";
   nameText.innerHTML = "<strong>" + addresses[index].name + "</strong>";
-  addressItem.appendChild(nameText);
+  addressRowOne.appendChild(nameText);
+
+  // Address row two
+  const addressRowTwo = document.createElement("div");
+  addressRowTwo.className = "uk_schools_single_address_row_two";
+  addressItem.appendChild(addressRowTwo);
 
   const addressText = document.createElement("p");
   addressText.className = "uk_schools_single_address";
   addressText.innerHTML = "<strong>Adres: </strong>" + addresses[index].address.replace(/, /g, "<br>");
-  addressItem.appendChild(addressText);
+  addressRowTwo.appendChild(addressText);
 
   const directorText = document.createElement("p");
   directorText.className = "uk_schools_single_director";
   if (addresses[index].director) {
     directorText.innerHTML = "<strong>Dyrektor: </strong>" + addresses[index].director;
-    addressItem.appendChild(directorText);
+    addressRowTwo.appendChild(directorText);
   }
 
   const telephoneText = document.createElement("p");
   telephoneText.className = "uk_schools_single_telephone";
   if (addresses[index].telephone) {
-    telephoneText.innerHTML = "<strong>Telefon: </strong>" + addresses[index].telephone;
-    addressItem.appendChild(telephoneText);
+    telephoneText.innerHTML = "<strong>Telefon: </strong>" + `<a href="tel:${addresses[index].telephone}">${addresses[index].telephone}</a>`;
+    addressRowTwo.appendChild(telephoneText);
   }
 
   const emailText = document.createElement("p");
   emailText.className = "uk_schools_single_email";
   if (addresses[index].email) {
     emailText.innerHTML = "<strong>Email: </strong>" + `<a href="mailto:${addresses[index].email}">${addresses[index].email}</a>`;
-    addressItem.appendChild(emailText);
-  }
-
-  const facebookText = document.createElement("p");
-  facebookText.className = "uk_schools_single_facebook";
-
-  if (addresses[index].facebook) {
-    facebookText.innerHTML = "<strong>Facebook: </strong>" + `<a  href="${addresses[index].facebook}" target="_blank"><span class="facebook-icon"></span></a>`;
-    addressItem.appendChild(facebookText);
+    addressRowTwo.appendChild(emailText);
   }
 
   const websiteText = document.createElement("p");
   websiteText.className = "uk_schools_single_website";
   if (addresses[index].website) {
-    websiteText.innerHTML = "<strong>Website: </strong>" + `<a href="${addresses[index].website}" target="_blank">${addresses[index].website}</a>`;
-    addressItem.appendChild(websiteText);
+    websiteText.innerHTML = "<strong>Strona internetowa: </strong>" + `<a href="${addresses[index].website}" target="_blank">${addresses[index].website}</a>`;
+    addressRowTwo.appendChild(websiteText);
+  }
+
+  const socialWrapper = document.createElement("div");
+  socialWrapper.className = "uk_schools_single_social";
+
+  if (addresses[index].facebook || addresses[index].instagram) {
+    addressRowTwo.appendChild(socialWrapper);
+  }
+
+  const facebookText = document.createElement("div");
+  facebookText.className = "uk_schools_single_facebook";
+
+  if (addresses[index].facebook) {
+    facebookText.innerHTML = `<a  href="${addresses[index].facebook}" target="_blank"><span class="facebook-icon"></span></a>`;
+    socialWrapper.appendChild(facebookText);
+  }
+
+  const instagramText = document.createElement("div");
+  instagramText.className = "uk_schools_single_instagram";
+  if (addresses[index].instagram) {
+    instagramText.innerHTML = `<a href="${addresses[index].instagram}" target="_blank"><span class="instagram-icon"></span></a>`;
+    socialWrapper.appendChild(instagramText);
   }
 
   // addressItem.addEventListener("click", () => showAddressOnMap(addresses[index].address, addresses[index].name));
