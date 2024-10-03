@@ -22,7 +22,7 @@ function uk_schools_on_map_enqueue_scripts() {
         wp_enqueue_script('custom-map-script', plugin_dir_url(__FILE__) . 'newmap.js', [], null, true);
         
         // Enqueue the Google Maps API
-        wp_enqueue_script('google-maps-api', 'https://maps.googleapis.com/maps/api/js?key=' . $google_maps_api_key . '&callback=initMap&v=weekly&libraries=marker', [], null, true);
+        wp_enqueue_script('google-maps-api', 'https://maps.googleapis.com/maps/api/js?key=' . $google_maps_api_key . '&callback=initMap&v=weekly&libraries=marker&libraries=places', [], null, true);
         
         // Localize script with AJAX URL and other needed values
         wp_localize_script('custom-map-script', 'ajax_object', array(
